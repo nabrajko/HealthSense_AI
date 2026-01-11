@@ -43,6 +43,8 @@ Users want to:
 - **Architecture**: Multi-agent system with Coordinator Agent
 - **AI**: Natural Language Processing for query routing
 
+## License
 
+IK Projct work for n8n platform
 
 [Add license information here]
