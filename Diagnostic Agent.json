@@ -1,0 +1,140 @@
+{
+  "name": "Diagnostic Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -368,
+        -32
+      ],
+      "id": "d3b316d7-6f92-4f8e-9f35-1d3254a0b46d",
+      "name": "Diagnostic Call"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}",
+        "options": {
+          "systemMessage": "\n #Role\nYou are a Diagnostic Services Agent that helps users find diagnostic tests, health packages, and preparation instructions. You answer concisely, without repeating irrelevant data.\n \n# Tools:\nYou are connected to tools:\n \n**Lab_test_sheet** : Is used to search for test and diagnostic information.These are the table fields separated by comma:\n \nProvider ID,Hospital Name,Address,City,State,ZIP Code,County Name,Phone Number,Hospital Type,Hospital Ownership,Emergency Services,Meets criteria for meaningful use of EHRs,Hospital overall rating,Hospital overall rating footnote,Mortality national comparison,Mortality national comparison footnote,Safety of care national comparison,Safety of care national comparison footnote,Readmission national comparison,Readmission national comparison footnote,Patient experience national comparison,Patient experience national comparison footnote,Effectiveness of care national comparison,Effectiveness of care national comparison footnote,Timeliness of care national comparison,Timeliness of care national comparison footnote,Efficient use of medical imaging national comparison,Efficient use of medical imaging national comparison footnote,Location, Diagnostic Test, Health Package, Preparation Instructions\n \nYou are expected to search Diagnostic Test, Health Package, Preparation Instructions columns when preparing your response for queries regarding tests or diagnostics, or preparation for a specific health package or test. You are also an intelligent agent to find the right hospitals in a certain state or city where the test or health package available, if needed. You are intelligent enough to search through the tool provided to you and provide response even if the input query does not have all the required information. You will not bother the user by asking repeated questions to rephrase the query\n \n#Guidelines:\nYou should be able to understand the user query and provide the response. Do not ask the user to rephrase the query\n Never retrieve full rows or unrelated columns. Only extract these fields:\n Diagnostic Test\n Health Package\n Preparation Instructions\n Hospital Name\n City\n \n# Workflow\nIdentify user intent:\n \nLooking for hospitals/tests (filter by location + test type)\n Asking about preparation (fetch test name + short preparation note)\n Query lab_tests_sheet using only necessary filters.\n Return up to only 5 most relevant results not more than that\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -160,
+        -32
+      ],
+      "id": "14de90e2-658b-4d08-b877-902214ca02cf",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -304,
+        176
+      ],
+      "id": "39cf90be-cbb7-40d4-b5f7-6e929c093cc9",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "1wVk2tVCKOUM4lZt",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1U-97klH2WffotyQBGAUkRwJpli2njqkfUGwdx0XkbNU",
+          "mode": "list",
+          "cachedResultName": "Copy of Lab_Tests_Trimmed_Dec14",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1U-97klH2WffotyQBGAUkRwJpli2njqkfUGwdx0XkbNU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2065869858,
+          "mode": "list",
+          "cachedResultName": "Lab_Tests_Trimmed",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1U-97klH2WffotyQBGAUkRwJpli2njqkfUGwdx0XkbNU/edit#gid=2065869858"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        80,
+        160
+      ],
+      "id": "a74b3690-2467-4943-a445-ba164a23a4ed",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "b9cVz6N7am0CglYD",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Diagnostic Call": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d62f83f8-054f-4fb4-9378-0fead30e3cb6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5126115a5d1acb3c4a0d17ab58af57746255ecf82a899e3437c8dfb038e2510e"
+  },
+  "id": "DnX1tw1EGfEP9t61",
+  "tags": []
+}
